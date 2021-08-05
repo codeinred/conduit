@@ -1,7 +1,7 @@
 #pragma once
 
 #if defined(__GNUC__) && !defined(__clang__)
-#if __GNUC__ == 10 && __GNUC_MINOR__ <= 3
+#if __GNUC__ == 10 && __GNUC_MINOR__ <= 2
 #define CONDUIT_USE_GCC_EXCEPTION_WORKAROUND 1
 #endif
 #endif
