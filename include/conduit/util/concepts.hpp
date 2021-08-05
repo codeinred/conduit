@@ -29,16 +29,21 @@ using handle_t = std::coroutine_handle<promise_t<T>>;
 template<class T, class... Alt>
 concept same_as_either = (same_as<T, Alt> || ...);
 
-template<class Awaitable>
+// Requires that either Alt... is empty, in which case any type matches
+// or that T matches one of Alt
+template<class T, class... Alt>
+concept any_or_match = sizeof...(Alt) == 0 || same_as_either<T, Alt...>;
+
+template<class Awaitable, class... ReturnSet>
 concept hard_awaitable = requires(Awaitable a, std::coroutine_handle<> h) {
     { a.await_ready() } -> same_as<bool>;
     { a.await_suspend(h) } -> same_as_either<void, bool, std::coroutine_handle<>>;
-    { a.await_resume() };
+    { a.await_resume() } -> any_or_match<ReturnSet...>;
 };
 
-template<class Awaitable>
-concept awaitable = hard_awaitable<Awaitable> || requires(Awaitable a) {
-    { a.operator co_await() } -> hard_awaitable;
+template<class Awaitable, class... ReturnSet>
+concept awaitable = hard_awaitable<Awaitable, ReturnSet...> || requires(Awaitable a) {
+    { a.operator co_await() } -> hard_awaitable<ReturnSet...>;
 };
 
 template<class Promise>
