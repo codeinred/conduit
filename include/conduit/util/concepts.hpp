@@ -10,6 +10,11 @@ namespace conduit {
 template <class A, class B>
 concept same_as = std::is_same_v<A, B> && std::is_same_v<B, A>;
 
+template <class F, class... Args>
+concept invocable = requires(F func, Args... args) {
+    { std::forward<F>(func)(std::forward<Args>(args)...) };
+};
+
 template <class From, class To>
 concept convertible_to = std::is_convertible_v<From, To>
     && requires(std::add_rvalue_reference_t<From> (&f)()) {
