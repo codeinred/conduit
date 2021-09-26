@@ -4,12 +4,13 @@
 
 namespace conduit::promise {
 template <class Alloc>
-struct continuation : mixin::GetReturnObject<continuation<Alloc>, false>,
-                      mixin::UnhandledException<continuation<Alloc>>,
-                      mixin::InitialSuspend<mixin::always>,
-                      mixin::FinalSuspend<mixin::never>,
-                      mixin::ReturnVoid,
-                      mixin::NewAndDelete<Alloc> {};
+struct continuation
+  : mixin::GetReturnObject<continuation<Alloc>, false>
+  , mixin::UnhandledException<continuation<Alloc>>
+  , mixin::InitialSuspend<mixin::always>
+  , mixin::FinalSuspend<mixin::never>
+  , mixin::ReturnVoid
+  , mixin::NewAndDelete<Alloc> {};
 } // namespace conduit::promise
 
 namespace conduit {
@@ -25,7 +26,8 @@ compiler error in gcc
 */
 #ifdef __clang__
     continuation() = default;
-    continuation(super handle) : super(handle) {}
+    continuation(super handle)
+      : super(handle) {}
     continuation(continuation const&) = default;
     continuation(continuation&&) = default;
 #endif
