@@ -13,7 +13,9 @@ class coroutine_queue {
     std::atomic<next_pointer> last_ptr;
 
    public:
-    coroutine_queue() noexcept : head(nullptr), last_ptr(&head) {}
+    coroutine_queue() noexcept
+      : head(nullptr)
+      , last_ptr(&head) {}
     // Atomically enqueues a node
     inline void enqueue(coroutine_node& n) noexcept {
         next_pointer previous = last_ptr.exchange(&n.next);
@@ -34,7 +36,7 @@ class coroutine_queue {
 
         old_head->next = nullptr; // Reset the next node to null
         return old_head;
-    } 
+    }
     bool empty() noexcept { return head == nullptr; }
     ~coroutine_queue() {
         while (coroutine_node* node = dequeue()) {
