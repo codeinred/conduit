@@ -19,7 +19,7 @@ struct arg<T&> {
 };
 
 template <class T>
-arg(T &&) -> arg<T>;
+arg(T&&) -> arg<T>;
 template <class T>
 arg(T&) -> arg<T&>;
 
@@ -29,7 +29,7 @@ auto bind_last(F&& func, T&&... last) {
         return std::forward<F>(func);
     } else {
         return [f = forward<F>(func),
-                ... last_ = arg{forward<T>(last)}](auto&&... first) mutable {
+                ... last_ = arg {forward<T>(last)}](auto&&... first) mutable {
             return f(forward<decltype(first)>(first)..., last_.fwd()...);
         };
     }
@@ -40,7 +40,7 @@ auto bind_first(F&& func, T&&... first) {
         return std::forward<F>(func);
     } else {
         return [f = forward<F>(func),
-                ... first_ = arg{forward<T>(first)}](auto&&... last) mutable {
+                ... first_ = arg {forward<T>(first)}](auto&&... last) mutable {
             return f(first_.fwd()..., forward<decltype(last)>(last)...);
         };
     }
