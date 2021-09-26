@@ -11,7 +11,8 @@ class channel {
     coroutine_queue awaiting_recieve;
 
    public:
-    channel(Executor& ex) noexcept : context(ex) {}
+    channel(Executor& ex) noexcept
+      : context(ex) {}
     struct await_send;
     struct await_recieve;
 
@@ -22,8 +23,8 @@ class channel {
 
         inline bool await_ready() {
             if (ch.awaiting_send.empty()) {
-                await_recieve* recv =
-                    static_cast<await_recieve*>(ch.awaiting_recieve.dequeue());
+                await_recieve* recv = static_cast<await_recieve*>(
+                    ch.awaiting_recieve.dequeue());
                 if (recv) {
                     recv->value = std::move(value);
                     ch.context.post(*recv);
@@ -46,8 +47,8 @@ class channel {
         [[no_unqiue_address]] T value;
         inline bool await_ready() {
             if (ch.awaiting_recieve.empty()) {
-                await_send* send =
-                    static_cast<await_send*>(ch.awaiting_send.dequeue());
+                await_send* send = static_cast<await_send*>(
+                    ch.awaiting_send.dequeue());
                 if (send) {
                     value = std::move(send->value);
                     ch.context.post(*send);
@@ -66,12 +67,12 @@ class channel {
         inline T await_resume() { return std::move(value); }
     };
     [[nodiscard]] await_send send(T const& value) {
-        return await_send{{}, *this, value};
+        return await_send {{}, *this, value};
     }
     [[nodiscard]] await_send send(T&& value) {
-        return await_send{{}, *this, std::move(value)};
+        return await_send {{}, *this, std::move(value)};
     }
-    await_recieve operator co_await() & { return await_recieve{{}, *this}; }
+    await_recieve operator co_await() & { return await_recieve {{}, *this}; }
 };
 
 template <class Executor = scheduler>
@@ -81,7 +82,8 @@ class wait_notify {
     std::atomic_int pending = 0;
 
    public:
-    wait_notify(Executor& ex) noexcept : context(ex) {}
+    wait_notify(Executor& ex) noexcept
+      : context(ex) {}
 
     Executor& executor() const { return context; }
     struct await_notify : coroutine_node {
@@ -118,6 +120,6 @@ class wait_notify {
             pending.fetch_add(1);
         }
     }
-    await_notify operator co_await() & { return await_notify{{}, *this}; }
+    await_notify operator co_await() & { return await_notify {{}, *this}; }
 };
 } // namespace conduit
