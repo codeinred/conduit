@@ -1,21 +1,26 @@
 #include "run_test.hpp"
-#include <conduit/task.hpp>
 #include <conduit/async/destroy.hpp>
+#include <conduit/task.hpp>
 
-task inner_task(std::string& result, std::string const& on_success,
-                std::string const& on_failure) {
+task inner_task(
+    std::string& result,
+    std::string const& on_success,
+    std::string const& on_failure) {
     result = on_success;
     co_await async::destroy();
     result = on_failure;
 }
-task outer_task(std::string& result, std::string const& on_success,
-                std::string const& on_failure) {
+task outer_task(
+    std::string& result,
+    std::string const& on_success,
+    std::string const& on_failure) {
     task t = inner_task(result, on_success, on_failure);
     co_await t;
     result = on_failure;
 }
 future<std::string> test_destroy(std::string on_success) {
-    auto coro = [](std::string& result, std::string const& on_success,
+    auto coro = [](std::string& result,
+                   std::string const& on_success,
                    std::string const& on_failure) -> coroutine {
         auto t = outer_task(result, on_success, on_failure);
         co_await t;
