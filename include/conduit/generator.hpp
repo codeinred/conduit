@@ -43,7 +43,7 @@ class [[nodiscard]] generator : unique_handle<promise::generator<T>> {
     using super::promise;
     using super::super;
     generator() = default;
-    generator(generator &&) = default;
+    generator(generator&&) = default;
     generator(const generator& other) = delete;
 
     generator& operator=(generator other) noexcept {
