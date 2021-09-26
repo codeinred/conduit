@@ -10,7 +10,8 @@ namespace conduit::io {
 using boost::system::error_code;
 struct status_result : error_code {
     status_result() = default;
-    status_result(error_code const& err) : error_code(err) {}
+    status_result(error_code const& err)
+      : error_code(err) {}
     inline error_code status() const { return *this; }
     inline bool good() const { return !error_code::operator bool(); }
     inline bool bad() const { return error_code::operator bool(); }
@@ -40,13 +41,17 @@ struct write_result : status_result {
     size_t count;
     operator bool() const { return !error_code::operator bool(); }
 };
-struct partial_read_result : status_result, std::string_view {
+struct partial_read_result
+  : status_result
+  , std::string_view {
     std::string_view message() { return *this; }
     operator bool() const {
         return status_result::good() && !status_result::eof();
     }
 };
-struct read_result : status_result, std::string {
+struct read_result
+  : status_result
+  , std::string {
     std::string message() { return *this; }
 };
-} // namespace conduit::async
+} // namespace conduit::io
