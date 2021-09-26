@@ -65,8 +65,9 @@ class co_thread {
     // Otherwise, if it's paused, destroys the coroutine
     void destroy_if_paused() {
         int expected = _running;
-        bool is_running =
-            thread->state.compare_exchange_strong(expected, _detached);
+        bool is_running = thread->state.compare_exchange_strong(
+            expected,
+            _detached);
         // If it's not running and it's not detached
         if (!is_running && expected == _paused) {
             thread->get_handle().destroy();
@@ -79,12 +80,16 @@ class co_thread {
       : thread(h.thread) {
         h.thread = nullptr;
     }
-    co_thread& operator=(co_thread t) { swap(t); return *this; }
+    co_thread& operator=(co_thread t) {
+        swap(t);
+        return *this;
+    }
     // Detaches the co_thread. If it's paused, resumes it.
     void detach() {
         int expected = _running;
-        bool is_running =
-            thread->state.compare_exchange_strong(expected, _detached);
+        bool is_running = thread->state.compare_exchange_strong(
+            expected,
+            _detached);
         if (!is_running && expected == _paused) {
             thread->state = _detached;
             thread->get_handle().resume();
@@ -97,12 +102,8 @@ class co_thread {
             thread->clear_and_rethrow_if_exception();
         }
     }
-    constexpr bool is_detached() {
-        return !thread;
-    }
-    bool is_running() {
-        return thread->state == _running;
-    }
+    constexpr bool is_detached() { return !thread; }
+    bool is_running() { return thread->state == _running; }
     void operator()() { resume(); }
     constexpr bool has_thread() const noexcept { return thread; }
     constexpr operator bool() const noexcept { return thread; }
