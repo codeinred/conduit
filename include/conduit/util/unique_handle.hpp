@@ -13,8 +13,8 @@ struct unique_handle : private std::coroutine_handle<Promise> {
     static Promise& declPromise();
 
    public:
-    constexpr static bool is_return_object_aware =
-        return_object_aware<Promise, unique_handle>;
+    constexpr static bool
+        is_return_object_aware = return_object_aware<Promise, unique_handle>;
     // This is used by the compiler to generate the coroutine frame
     using promise_type = Promise;
     // unique_handle inherits from super
@@ -44,18 +44,21 @@ struct unique_handle : private std::coroutine_handle<Promise> {
     }
 
     // constructs a unique_handle from a coroutine handle
-    unique_handle(std::coroutine_handle<Promise> h) : super(h) {
+    unique_handle(std::coroutine_handle<Promise> h)
+      : super(h) {
         if constexpr (is_return_object_aware) {
             promise().set_return_object(this);
         }
     }
-    unique_handle(promise_type& h) : super(super::from_promise(h)) {
+    unique_handle(promise_type& h)
+      : super(super::from_promise(h)) {
         if constexpr (is_return_object_aware) {
             h.set_return_object(this);
         }
     }
     unique_handle(unique_handle const&) = delete;
-    unique_handle(unique_handle&& source) noexcept : super(source) {
+    unique_handle(unique_handle&& source) noexcept
+      : super(source) {
         source.super::operator=(nullptr);
         if constexpr (is_return_object_aware) {
             promise().set_return_object(this);
@@ -103,8 +106,8 @@ struct unique_handle : private std::coroutine_handle<Promise> {
             promise().set_return_object(this);
         }
     }
-    constexpr void
-    assign_no_destroy(std::coroutine_handle<Promise> other) noexcept {
+    constexpr void assign_no_destroy(
+        std::coroutine_handle<Promise> other) noexcept {
         super::operator=(other);
         if constexpr (is_return_object_aware) {
             promise().set_return_object(this);
