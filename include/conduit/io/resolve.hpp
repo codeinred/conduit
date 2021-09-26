@@ -26,8 +26,9 @@ class resolve<boost::asio::ip::basic_resolver<Protocol, Executor>> {
     endpoint_list endpoints;
 
     auto get_handler(std::coroutine_handle<> h) {
-        return [this, caller = async::callback(h)](error_code const& ec,
-                                            endpoint_list r) mutable {
+        return [this, caller = async::callback(h)](
+                   error_code const& ec,
+                   endpoint_list r) mutable {
             ec_ptr = &ec;
             endpoints = std::move(r);
             caller.resume();
@@ -36,19 +37,23 @@ class resolve<boost::asio::ip::basic_resolver<Protocol, Executor>> {
 
    public:
     resolve(resolver& r, std::string_view host, std::string_view service)
-      : r(r), host(host), service(service) {}
+      : r(r)
+      , host(host)
+      , service(service) {}
 
     constexpr bool await_ready() noexcept { return false; }
     void await_suspend(std::coroutine_handle<> h) {
         r.async_resolve(host, service, get_handler(h));
     }
     auto await_resume() {
-        return resolve_result{*ec_ptr, std::move(endpoints)};
+        return resolve_result {*ec_ptr, std::move(endpoints)};
     }
 };
 
 template <class Protocol, class Executor>
-resolve(boost::asio::ip::basic_resolver<Protocol, Executor>&, std::string_view,
-        std::string_view)
+resolve(
+    boost::asio::ip::basic_resolver<Protocol, Executor>&,
+    std::string_view,
+    std::string_view)
     -> resolve<boost::asio::ip::basic_resolver<Protocol, Executor>>;
-} // namespace conduit::async
+} // namespace conduit::io
