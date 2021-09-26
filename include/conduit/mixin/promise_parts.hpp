@@ -30,8 +30,8 @@ struct InitialSuspend {
 
         inline constexpr bool await_ready() { return false; }
         inline bool await_suspend(std::coroutine_handle<> h) {
-            destroy_coro_ref =
-                ((detail::frame_header_t*)h.address())->destroy_coro;
+            destroy_coro_ref = ((detail::frame_header_t*)h.address())
+                                   ->destroy_coro;
             return suspend; // The coroutine is resumed if suspend is false
         }
         inline constexpr void await_resume() noexcept {}
@@ -166,8 +166,8 @@ class HasOwnerAndCallback : public mixin::InitialSuspend<true> {
 
 class ExceptionHandler {
     std::exception_ptr exception_ptr;
-    constexpr static bool unhandled_noexcept =
-        std::is_nothrow_copy_assignable_v<std::exception_ptr>;
+    constexpr static bool unhandled_noexcept = std::
+        is_nothrow_copy_assignable_v<std::exception_ptr>;
 
    public:
     void unhandled_exception() noexcept(unhandled_noexcept) {
@@ -191,8 +191,8 @@ template <class T>
 class YieldValue {
    public:
     using value_type = std::remove_reference_t<T>;
-    using reference_type =
-        std::conditional_t<std::is_reference_v<T>, T, T const&>;
+    using reference_type = std::
+        conditional_t<std::is_reference_v<T>, T, T const&>;
     using pointer_type = std::remove_reference_t<reference_type>*;
 
    private:
