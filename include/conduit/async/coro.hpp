@@ -19,13 +19,16 @@ class coro {
 
     constexpr coro() = default;
     coro(coro const&) = delete;
-    constexpr coro(std::nullptr_t) noexcept : coro() {}
-    coro(std::coroutine_handle<Promise> h) noexcept : handle(h) {
+    constexpr coro(std::nullptr_t) noexcept
+      : coro() {}
+    coro(std::coroutine_handle<Promise> h) noexcept
+      : handle(h) {
         if (handle) {
             handle.promise().set_owner(&handle);
         }
     }
-    constexpr coro(coro&& source) noexcept : handle(source.release()) {
+    constexpr coro(coro&& source) noexcept
+      : handle(source.release()) {
         if (handle) {
             handle.promise().set_owner(&handle);
         }
@@ -46,7 +49,7 @@ class coro {
 
     // awaits on the given coroutine
     auto operator co_await() & noexcept {
-        return on_coro<Promise, false>{handle};
+        return on_coro<Promise, false> {handle};
     }
 
 #if defined(__GNUC__) && !defined(__clang__)
@@ -56,7 +59,7 @@ class coro {
 #else
     // awaits on the given coroutine
     auto operator co_await() && noexcept {
-        return on_coro<Promise, true>{handle};
+        return on_coro<Promise, true> {handle};
     }
 #endif
     bool done() const { return handle.done(); }
