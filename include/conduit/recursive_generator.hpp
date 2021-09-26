@@ -17,8 +17,9 @@ struct recursive_generator;
 template <
     // Type output by generator
     class T>
-struct recursive_generator : mixin::InitialSuspend<false>,
-                             mixin::UnhandledException<recursive_generator<T>> {
+struct recursive_generator
+  : mixin::InitialSuspend<false>
+  , mixin::UnhandledException<recursive_generator<T>> {
     using return_object = conduit::recursive_generator<T>;
     using handle_type = std::coroutine_handle<recursive_generator>;
     unique_handle<recursive_generator>* sauce = nullptr;
@@ -27,9 +28,11 @@ struct recursive_generator : mixin::InitialSuspend<false>,
    public:
     void rethrow_if_exception() {}
     auto get_return_object() {
-        return return_object{handle_type::from_promise(*this)};
+        return return_object {handle_type::from_promise(*this)};
     }
-    void set_return_object(unique_handle<recursive_generator>* sauce) { this->sauce = sauce; }
+    void set_return_object(unique_handle<recursive_generator>* sauce) {
+        this->sauce = sauce;
+    }
 
     void return_value(return_object new_generator) {
         sauce->assign_no_destroy(std::move(new_generator));
@@ -39,14 +42,14 @@ struct recursive_generator : mixin::InitialSuspend<false>,
     async::continue_if final_suspend() noexcept {
         // If the sauce is null, this coroutine has been coroutine
         // so await_ready should indicate true in order to clean up coroutine
-        return async::continue_if{sauce == nullptr};
+        return async::continue_if {sauce == nullptr};
     }
 
     // Stores value in this->value, to be accessed by the caller via
     // coroutine_handle.promise().value
     constexpr auto yield_value(T const& v) noexcept {
         pointer = &v;
-        return std::suspend_always{};
+        return std::suspend_always {};
     }
     constexpr T const& get_value() noexcept { return *pointer; }
 };
