@@ -3,7 +3,7 @@
 
 future<std::string> test_on_suspend(std::string on_success) {
     std::string result;
-    co_await async::on_suspend{[&](std::coroutine_handle<> h) {
+    co_await async::on_suspend {[&](std::coroutine_handle<> h) {
         result = on_success;
         h.resume();
     }};
