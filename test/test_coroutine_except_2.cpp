@@ -8,12 +8,16 @@ class invoke_on_destroy {
 
    public:
     invoke_on_destroy() = delete;
-    invoke_on_destroy(F const& action) : invoke(action), do_action(true) {}
+    invoke_on_destroy(F const& action)
+      : invoke(action)
+      , do_action(true) {}
     invoke_on_destroy(F&& action)
-      : invoke(std::move(action)), do_action(true) {}
+      : invoke(std::move(action))
+      , do_action(true) {}
     invoke_on_destroy(invoke_on_destroy&& other) noexcept(
         std::is_nothrow_move_constructible_v<F>)
-      : invoke(std::move(other.invoke)), do_action(other.do_action) {
+      : invoke(std::move(other.invoke))
+      , do_action(other.do_action) {
         other.do_action = false;
     }
     void cancel() { do_action = false; }
