@@ -38,9 +38,7 @@ class source
         YieldValue::yield_value(value);
         return async::jump {callback};
     }
-    async::jump final_suspend() noexcept {
-        return async::jump { callback };
-    }
+    async::jump final_suspend() noexcept { return async::jump {callback}; }
 
     auto get_return_object() noexcept {
         return coroutine_handle::from_promise(*this);
@@ -100,8 +98,8 @@ class source : std::coroutine_handle<promise::source<T>> {
     using promise_type = promise::source<T>;
     using coroutine_handle = std::coroutine_handle<promise_type>;
     using reference_type = typename promise_type::reference_type;
-    using optional_ref_type =
-        optional_ref<std::remove_reference_t<reference_type>>;
+    using optional_ref_type = optional_ref<
+        std::remove_reference_t<reference_type>>;
     using super::operator bool;
 
     source() = default;
