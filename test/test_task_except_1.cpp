@@ -1,6 +1,6 @@
 #include "run_test.hpp"
-#include <stdexcept>
 #include <conduit/task.hpp>
+#include <stdexcept>
 
 task test_task_ex(std::string what) {
     throw std::logic_error(what);
