@@ -1,6 +1,6 @@
 #include "run_test.hpp"
-#include <stdexcept>
 #include <conduit/source.hpp>
+#include <stdexcept>
 
 source<int> test_source_ex(std::string what) {
     throw std::logic_error(what);
