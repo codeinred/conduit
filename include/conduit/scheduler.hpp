@@ -11,9 +11,7 @@ class scheduler {
     struct await_post {
         scheduler& c;
         coroutine_node node;
-        constexpr bool await_ready() const {
-            return false;
-        }
+        constexpr bool await_ready() const { return false; }
         void await_suspend(std::coroutine_handle<> h) noexcept {
             node.caller = h;
             c.post(node);
@@ -22,9 +20,7 @@ class scheduler {
     };
     scheduler() = default;
     void post(coroutine_node& node) noexcept { jobs.enqueue(node); }
-    await_post post() {
-        return await_post{*this};
-    }
+    await_post post() { return await_post {*this}; }
 
     void stop() { running = false; }
     void run() {
@@ -35,8 +31,6 @@ class scheduler {
             job->caller();
         }
     }
-    void operator()() {
-        run();
-    }
+    void operator()() { run(); }
 };
 } // namespace conduit
