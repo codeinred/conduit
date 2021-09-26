@@ -8,8 +8,8 @@ struct coro_sentinel {};
 
 template <class Handle>
 struct coro_iterator {
-    using promise_type =
-        std::decay_t<decltype(std::declval<Handle>().promise())>;
+    using promise_type = std::decay_t<
+        decltype(std::declval<Handle>().promise())>;
     Handle coro;
 
     // Resumes the coroutine; returns reference to this iterator
@@ -105,7 +105,9 @@ class coro_iterator<std::coroutine_handle<Promise>> {
 
     reference operator*() const noexcept { return coro.promise().value(); }
 
-    pointer operator->() const noexcept { return std::addressof(coro.promise().value()); }
+    pointer operator->() const noexcept {
+        return std::addressof(coro.promise().value());
+    }
 
    private:
     coroutine_handle coro;
