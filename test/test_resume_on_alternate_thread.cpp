@@ -16,7 +16,7 @@ future<std::string> test_resume_on_alternate_thread(std::string on_success) {
         }
         void await_resume() noexcept {}
     };
-    co_await move_to_new_thread{};
+    co_await move_to_new_thread {};
     co_return on_success;
 }
 
