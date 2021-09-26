@@ -1,6 +1,6 @@
 #pragma once
-#include <conduit/util/stdlib_coroutine.hpp>
 #include <conduit/async/callback.hpp>
+#include <conduit/util/stdlib_coroutine.hpp>
 
 #include <conduit/io/responses.hpp>
 
@@ -27,8 +27,9 @@ struct connect<Protocol, EndpointSequence> {
     error_code const* ec_pointer;
     endpoint const* ep_pointer;
     auto get_handler(std::coroutine_handle<> h) {
-        return [this, caller = async::callback(h)](error_code const& ec,
-                                            endpoint const& ep) mutable {
+        return [this, caller = async::callback(h)](
+                   error_code const& ec,
+                   endpoint const& ep) mutable {
             ec_pointer = &ec;
             ep_pointer = &ep;
             caller.resume();
@@ -39,14 +40,18 @@ struct connect<Protocol, EndpointSequence> {
         boost::asio::async_connect(socket, seq, get_handler(h));
     }
 
-    connect(boost::asio::basic_socket<Protocol>& socket,
-            EndpointSequence const& seq) noexcept
-      : socket(socket), seq(seq) {}
+    connect(
+        boost::asio::basic_socket<Protocol>& socket,
+        EndpointSequence const& seq) noexcept
+      : socket(socket)
+      , seq(seq) {}
 
     auto await_resume() noexcept {
-        return connect_result{*ec_pointer, *ep_pointer};
+        return connect_result {*ec_pointer, *ep_pointer};
     }
 };
-template<class Protocol, class EndpointSequence>
-connect(boost::asio::basic_socket<Protocol>& socket, EndpointSequence const& seq) -> connect<Protocol, EndpointSequence>;
-} // namespace conduit::async
+template <class Protocol, class EndpointSequence>
+connect(
+    boost::asio::basic_socket<Protocol>& socket,
+    EndpointSequence const& seq) -> connect<Protocol, EndpointSequence>;
+} // namespace conduit::io
