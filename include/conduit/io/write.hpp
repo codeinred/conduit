@@ -1,7 +1,7 @@
 #pragma once
-#include <conduit/io/responses.hpp>
 #include <conduit/async/callback.hpp>
 #include <conduit/coroutine.hpp>
+#include <conduit/io/responses.hpp>
 
 #include <boost/asio/basic_socket.hpp>
 #include <boost/asio/ip/tcp.hpp>
@@ -22,8 +22,9 @@ class write {
     error_code const* status;
 
     auto get_handler(std::coroutine_handle<> h) {
-        return [this, caller = async::callback(h)](error_code const& e,
-                                                   size_t s) mutable {
+        return [this, caller = async::callback(h)](
+                   error_code const& e,
+                   size_t s) mutable {
             status = &e;
             message = message.substr(0, s);
             caller.resume();
@@ -35,7 +36,8 @@ class write {
     write(write const&) = default;
     write(write&&) = default;
     write(Socket& socket, std::string_view data)
-      : socket(socket), message(data) {}
+      : socket(socket)
+      , message(data) {}
 
     constexpr bool await_ready() noexcept { return false; }
     void await_suspend(std::coroutine_handle<> h) {
@@ -46,8 +48,8 @@ class write {
 template <class Socket>
 write(Socket& s, std::string_view data) -> write<Socket>;
 
-template<class Socket>
+template <class Socket>
 coroutine start_write(Socket socket, std::string message) {
     co_await write(socket, message);
 }
-} // namespace conduit::async
+} // namespace conduit::io
