@@ -13,11 +13,12 @@ struct coroutine {
 namespace conduit::promise {
 // Represents a promise type for a coroutine that is coroutine
 // and can't be resumed or checked for being done
-struct coroutine : mixin::InitialSuspend<false>,
-                   mixin::FinalSuspend<false>,
-                   mixin::UnhandledException<coroutine>,
-                   mixin::ReturnVoid {
+struct coroutine
+  : mixin::InitialSuspend<false>
+  , mixin::FinalSuspend<false>
+  , mixin::UnhandledException<coroutine>
+  , mixin::ReturnVoid {
 
-    auto get_return_object() noexcept { return conduit::coroutine{}; }
+    auto get_return_object() noexcept { return conduit::coroutine {}; }
 };
 } // namespace conduit::promise
