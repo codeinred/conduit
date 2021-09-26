@@ -18,13 +18,13 @@ struct default_allocator {
 template <size_t buffer_size>
 struct static_allocator {
     using self = static_allocator;
-    alignas(void*) mutable char buffer[buffer_size]{};
+    alignas(void*) mutable char buffer[buffer_size] {};
 
     void* alloc(size_t size) {
         if (size <= sizeof(buffer)) {
             return buffer;
         } else {
-            return new char[size]{};
+            return new char[size] {};
         }
     }
     static void dealloc(void* addr, size_t size) {
@@ -37,7 +37,7 @@ struct static_allocator {
 template <class Callback, size_t buffer_size>
 struct static_callback_allocator {
     using self = static_callback_allocator;
-    alignas(void*) mutable char buffer[buffer_size]{};
+    alignas(void*) mutable char buffer[buffer_size] {};
     [[no_unique_address]] Callback callback;
 
     void* alloc(size_t size) {
