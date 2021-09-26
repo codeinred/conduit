@@ -1,6 +1,6 @@
 #pragma once
-#include <conduit/future.hpp>
 #include <conduit/async/callback.hpp>
+#include <conduit/future.hpp>
 
 #include <conduit/io/responses.hpp>
 
@@ -31,8 +31,9 @@ class read_some {
     std::span<char> buffer;
 
     auto get_handler(std::coroutine_handle<> h) {
-        return [this, caller = async::callback(h)](error_code const& response,
-                                                   size_t s) mutable {
+        return [this, caller = async::callback(h)](
+                   error_code const& response,
+                   size_t s) mutable {
             status = &response;
             buffer = buffer.subspan(0, s);
             caller.resume();
@@ -43,12 +44,14 @@ class read_some {
     read_some() = default;
     read_some(read_some const&) = default;
     read_some(socket_type& socket, std::span<char> buffer) noexcept
-      : socket(socket), buffer(buffer) {}
+      : socket(socket)
+      , buffer(buffer) {}
 
     constexpr bool await_ready() noexcept { return false; }
     void await_suspend(std::coroutine_handle<> h) {
         socket.async_read_some(
-            asio::mutable_buffer(buffer.data(), buffer.size()), get_handler(h));
+            asio::mutable_buffer(buffer.data(), buffer.size()),
+            get_handler(h));
     }
     partial_read_result await_resume() {
         return {*status, std::string_view(buffer.data(), buffer.size())};
@@ -60,13 +63,13 @@ future<read_result> read(asio::basic_stream_socket<Protocol>& socket) {
     std::array<char, 1024> buffer;
     std::string result;
     while (true) {
-        auto response = co_await read_some{socket, buffer};
+        auto response = co_await read_some {socket, buffer};
 
-        if(!response) {
-            co_return read_result{response.status(), result};
-        } 
+        if (!response) {
+            co_return read_result {response.status(), result};
+        }
 
         result += response;
     }
 }
-} // namespace conduit::async
+} // namespace conduit::io
