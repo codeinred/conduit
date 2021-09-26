@@ -1,6 +1,6 @@
-#include <utility>
-#include <conduit/util/stdlib_coroutine.hpp>
 #include <conduit/async/callback.hpp>
+#include <conduit/util/stdlib_coroutine.hpp>
+#include <utility>
 
 namespace conduit {
 template <class Awaitable>
@@ -8,7 +8,8 @@ struct unique_awaitable {
     Awaitable* pointer = nullptr;
 
     unique_awaitable() = default;
-    unique_awaitable(Awaitable* pointer) noexcept : pointer(pointer) {}
+    unique_awaitable(Awaitable* pointer) noexcept
+      : pointer(pointer) {}
     unique_awaitable(unique_awaitable const&) = default;
     unique_awaitable(unique_awaitable&& other) noexcept
       : pointer(other.pointer) {
@@ -22,7 +23,7 @@ struct unique_awaitable {
     async::callback release() {
         std::coroutine_handle<> caller = pointer->caller;
         pointer = nullptr;
-        return async::callback{caller};
+        return async::callback {caller};
     }
     Awaitable* operator->() const { return pointer; }
     ~unique_awaitable() {
