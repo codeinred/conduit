@@ -7,8 +7,9 @@
 
 namespace conduit::promise {
 template <class ReturnValue>
-struct future : mixin::GetReturnObject<future<ReturnValue>>,
-                mixin::HasOwnerAndCallback {
+struct future
+  : mixin::GetReturnObject<future<ReturnValue>>
+  , mixin::HasOwnerAndCallback {
     std::variant<ReturnValue, std::exception_ptr> result;
     struct visitor {
         auto operator()(ReturnValue& v) const -> ReturnValue {
@@ -21,14 +22,14 @@ struct future : mixin::GetReturnObject<future<ReturnValue>>,
     void unhandled_exception() { result = std::current_exception(); }
     void return_value(ReturnValue const& r) { result = r; }
     void return_value(ReturnValue&& r) { result = std::move(r); }
-    ReturnValue get_value() { return std::visit(visitor{}, result); }
+    ReturnValue get_value() { return std::visit(visitor {}, result); }
 };
 
 template <class ReturnValue>
 struct optional_future
-  : mixin::GetReturnObject<optional_future<ReturnValue>>,
-    mixin::HasOwnerAndCallback,
-    mixin::UnhandledException<optional_future<ReturnValue>> {
+  : mixin::GetReturnObject<optional_future<ReturnValue>>
+  , mixin::HasOwnerAndCallback
+  , mixin::UnhandledException<optional_future<ReturnValue>> {
     std::variant<std::nullopt_t, ReturnValue, std::exception_ptr> result;
     struct visitor {
         auto operator()(ReturnValue& v) const -> std::optional<ReturnValue> {
@@ -59,7 +60,7 @@ struct optional_future
     void return_value(tags::nothing_t) { result.emplace(std::nullopt); }
     void return_value(std::nullopt_t) { result.emplace(std::nullopt); }
     std::optional<ReturnValue> get_value() {
-        return std::visit(visitor{}, result);
+        return std::visit(visitor {}, result);
     }
 };
 } // namespace conduit::promise
