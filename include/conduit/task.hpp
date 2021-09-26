@@ -5,9 +5,10 @@
 
 namespace conduit {
 namespace promise {
-struct task : mixin::GetReturnObject<task>,
-              mixin::HasOwnerAndCallback,
-              mixin::ReturnVoid {
+struct task
+  : mixin::GetReturnObject<task>
+  , mixin::HasOwnerAndCallback
+  , mixin::ReturnVoid {
     std::exception_ptr exception;
     void unhandled_exception() noexcept {
         exception = std::current_exception();
